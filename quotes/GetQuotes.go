@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/alikan97/lambda.git/models"
+	"github.com/alikan97/lambda/models"
 )
 
 func GetQuotes() ([]models.AssetQuote, error) {

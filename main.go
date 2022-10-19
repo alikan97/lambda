@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/alikan97/lambda.git/models"
-	"github.com/alikan97/lambda.git/recenttrades"
+	"github.com/alikan97/lambda/models"
+	"github.com/alikan97/lambda/recenttrades"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"

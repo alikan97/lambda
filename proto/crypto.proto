@@ -1,0 +1,76 @@
+syntax = "proto3";
+package com.server.protos;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/alikan97/lambda/proto";
+
+
+message asset {
+  string symbol = 1;
+  string name = 2;
+}
+
+message getAssetReq {
+  string symbol = 1;
+}
+
+message getAssetResp {
+  asset response = 1;
+}
+
+message getAllAssetResp {
+  repeated asset response = 1;
+}
+
+message recentTradesReq {
+  uint64 since = 1;
+  string symbol = 2;
+}
+
+message recentTradesResp {
+  string symbolName = 1;
+  double quantity = 3;
+  uint64 time = 4;
+}
+
+message recentTradesMultiple {
+  repeated recentTradesResp listResponse = 1;
+}
+
+message addRecentTradeReq {
+  string assetName = 1;
+  string assetCode = 2;
+  uint32 price = 3;
+  double quantity = 4;
+  uint64 time = 5;
+}
+
+message addRecentTradeReqMulti {
+  repeated addRecentTradeReq recentTrade = 1;
+}
+
+message getQuoteReq {
+  string symbol = 1;
+}
+
+message quoteResp {
+  string symbol = 1;
+  double price = 2;
+  string lastUpdated = 3;
+}
+
+message updateQuoteReq {
+  string symbol = 1;
+  double updatedPrice = 2;
+}
+
+service Crypto {
+  rpc getAllAsset(google.protobuf.Empty) returns (getAllAssetResp);
+  rpc getAsset(getAssetReq) returns (getAssetResp);
+  rpc getRecentTrades(recentTradesReq) returns (recentTradesMultiple);
+  rpc addRecentTrade(addRecentTradeReqMulti) returns (google.protobuf.Empty);
+  rpc getCurrentQuote(getQuoteReq) returns (quoteResp);
+  rpc updateQuotes(updateQuoteReq) returns (google.protobuf.Empty);
+}

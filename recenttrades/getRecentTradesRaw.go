@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/alikan97/lambda.git/models"
+	"github.com/alikan97/lambda/models"
 )
 
 func GetRecentTrades() ([]models.RecentTradesDTO, error) {
