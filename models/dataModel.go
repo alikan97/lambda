@@ -25,8 +25,8 @@ type RawRecentTrades struct {
 
 type RecentTradesDTO struct {
 	AssetName string  `json:"assetName"`
-	AssetCode string  `json:"string"`
-	Price     uint32  `json:"price"`
+	AssetCode string  `json:"assetCode"`
+	Price     float32 `json:"price"`
 	Quantity  float64 `json:"quantity"`
 	Time      uint64  `json:"time"`
 }

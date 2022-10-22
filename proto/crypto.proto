@@ -42,7 +42,7 @@ message recentTradesMultiple {
 message addRecentTradeReq {
   string assetName = 1;
   string assetCode = 2;
-  uint32 price = 3;
+  float price = 3;
   double quantity = 4;
   uint64 time = 5;
 }

@@ -37,11 +37,22 @@ func HandleRequest(ctx context.Context, sqsEvent events.SQSEvent) error {
 
 		if message.MessageType == "ASSETQUOTE" {
 			for _, v := range message.MessageContent {
-				newPrice, err := strconv.ParseFloat(v.(models.AssetQuote).Price, 64)
+				jsonBody, err := json.Marshal(v)
+				if err != nil {
+					fmt.Printf("Error unmarshaling json")
+				}
+
+				AQ := models.AssetQuote{}
+
+				if err := json.Unmarshal(jsonBody, &AQ); err != nil {
+					fmt.Printf("Error unmarshaling to models.AssetQuote")
+				}
+
+				newPrice, err := strconv.ParseFloat(AQ.Price, 64)
 				if err != nil {
 					fmt.Errorf("Error trying to parse string to float: %v", err)
 				}
-				_, rpcErr := c.UpdateQuotes(ctx, &pb.UpdateQuoteReq{Symbol: v.(models.AssetQuote).SymbolName, UpdatedPrice: newPrice})
+				_, rpcErr := c.UpdateQuotes(ctx, &pb.UpdateQuoteReq{Symbol: AQ.SymbolName, UpdatedPrice: newPrice})
 
 				if rpcErr != nil {
 					fmt.Errorf("Error occurred trying to send update for message id: %s. Reason: %v", message.MessageId, rpcErr)
@@ -51,27 +62,41 @@ func HandleRequest(ctx context.Context, sqsEvent events.SQSEvent) error {
 			return nil
 		}
 
-		// if message.MessageType == "RECENTTRADES" {
-		// 	msgArr := make([]*pb.AddRecentTradeReq, 0)
+		if message.MessageType == "RECENTTRADES" {
+			msgArr := make([]*pb.AddRecentTradeReq, 0)
 
-		// 	for _, v := range message.MessageContent {
-		// 		formattedMsg := &pb.AddRecentTradeReq{
-		// 			AssetName: v.(models.RecentTradesDTO).AssetName,
-		// 			AssetCode: v.(models.RecentTradesDTO).AssetCode,
-		// 			Price:     v.(models.RecentTradesDTO).Price, Quantity: v.(models.RecentTradesDTO).Quantity,
-		// 			Time: v.(models.RecentTradesDTO).Time,
-		// 		}
+			for _, v := range message.MessageContent {
+				jsonBody, err := json.Marshal(v)
+				if err != nil {
+					fmt.Errorf("Error unmarshaling json")
+				}
 
-		// 		msgArr = append(msgArr, formattedMsg)
-		// 	}
-		// 	_, rpcErr := c.AddRecentTrade(ctx, &pb.AddRecentTradeReqMulti{RecentTrade: msgArr})
+				RT := models.RecentTradesDTO{}
 
-		// 	if rpcErr != nil {
-		// 		fmt.Errorf("Error adding recent trade for message id: %s. Reason: %v", message.MessageId, rpcErr)
-		// 		return rpcErr
-		// 	}
-		// 	return nil
-		// }
+				if err := json.Unmarshal(jsonBody, &RT); err != nil {
+					fmt.Printf("Error unmarshalling to models.RecentTradesDto")
+				}
+
+				formattedMsg := &pb.AddRecentTradeReq{
+					AssetName: RT.AssetName,
+					AssetCode: RT.AssetCode,
+					Price:     RT.Price,
+					Quantity:  RT.Quantity,
+					Time:      RT.Time,
+				}
+
+				msgArr = append(msgArr, formattedMsg)
+			}
+
+			fmt.Printf("Value: %v", msgArr)
+			_, rpcErr := c.AddRecentTrade(ctx, &pb.AddRecentTradeReqMulti{RecentTrade: msgArr})
+
+			if rpcErr != nil {
+				fmt.Errorf("Error adding recent trade for message id: %s. Reason: %v", message.MessageId, rpcErr)
+				return rpcErr
+			}
+			return nil
+		}
 	}
 
 	return nil

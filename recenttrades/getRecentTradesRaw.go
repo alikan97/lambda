@@ -43,7 +43,7 @@ func GetRecentTrades() ([]models.RecentTradesDTO, error) {
 			result = append(result, models.RecentTradesDTO{
 				AssetName: s,
 				AssetCode: "CRYP",
-				Price:     uint32(Price),
+				Price:     float32(Price),
 				Quantity:  Quantity,
 				Time:      uint64(val.Time),
 			})
