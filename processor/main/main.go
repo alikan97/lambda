@@ -16,7 +16,7 @@ import (
 )
 
 func HandleRequest(ctx context.Context, sqsEvent events.SQSEvent) error {
-	serverAddress := flag.String("address", "localhost:8080", "the server address")
+	serverAddress := flag.String("address", "172.30.2.10:8085", "the server address")
 
 	conn, err := grpc.Dial(*serverAddress, grpc.WithInsecure())
 
@@ -52,6 +52,7 @@ func HandleRequest(ctx context.Context, sqsEvent events.SQSEvent) error {
 				if err != nil {
 					fmt.Errorf("Error trying to parse string to float: %v", err)
 				}
+				fmt.Printf("SymbolName: %s, Price: %v", AQ.SymbolName, newPrice)
 				_, rpcErr := c.UpdateQuotes(ctx, &pb.UpdateQuoteReq{Symbol: AQ.SymbolName, UpdatedPrice: newPrice})
 
 				if rpcErr != nil {
